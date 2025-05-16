@@ -10,7 +10,7 @@ import google.generativeai as genai
 # ────────────────────────────────────────────────────────────────────────────────
 # Configure Gemini (set your API key as environment variable GENAI_API_KEY)
 # ────────────────────────────────────────────────────────────────────────────────
-GENAI_API_KEY = "AIzaSyCpu_OmvM5ElHNsT89SwJ1umKEUUj5j_h4"  # Replace with your actual API key
+GENAI_API_KEY = "AIzaSyBD5GkHCZ2LcW8Hb0nOuWRNlamSyGBdQ3s"  # Replace with your actual API key
 USE_GEMINI = GENAI_API_KEY not in (None, "")
 if USE_GEMINI:
     genai.configure(api_key=  GENAI_API_KEY )
