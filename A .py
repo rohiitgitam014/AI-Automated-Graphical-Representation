@@ -86,7 +86,7 @@ if file:
         for col in numeric_cols:
             if df_cleaned[col].dropna().nunique() > 1:
                 st.markdown(f"**Histogram of `{col}`**")
-                fig = px.histogram(df_cleaned, x=col)
+                fig = px.histogram(df_cleaned, x=col, color = col)
                 st.plotly_chart(fig, use_container_width=True)
 
                 # AI Summary
@@ -104,7 +104,7 @@ if file:
                 if (df_cleaned[x_col].dropna().nunique() > 1
                         and df_cleaned[y_col].dropna().nunique() > 1):
                     st.markdown(f"**Scatter Plot: `{x_col}` vs `{y_col}`**")
-                    fig = px.scatter(df_cleaned, x=x_col, y=y_col)
+                    fig = px.scatter(df_cleaned, x=x_col, y=y_col, color = x_col)
                     st.plotly_chart(fig, use_container_width=True)
 
                     corr_val = df_cleaned[[x_col, y_col]].corr().iloc[0,1]
@@ -125,7 +125,7 @@ if file:
                     continue        # skip empty or high‑cardinality
                 st.markdown(f"**Bar Chart: `{num_col}` by `{cat_col}`**")
                 fig = px.bar(tmp, x=cat_col, y=num_col,
-                             title=f"{num_col} per {cat_col} (Raw Values)")
+                             title=f"{num_col} per {cat_col} (Raw Values)", color = cat_col)
                 st.plotly_chart(fig, use_container_width=True)
 
                 top_vals = tmp.groupby(cat_col)[num_col].mean().sort_values(ascending=False).head(5)
@@ -135,30 +135,7 @@ if file:
                 summary = generate_summary(prompt)
                 st.markdown(f"> **AI Summary:** {summary}")
 
-    # 7️⃣ CORRELATION HEATMAP --------------------------------------------------
-    if len(numeric_cols) >= 2:
-        valid = [c for c in numeric_cols if df_cleaned[c].dropna().nunique() > 1]
-        if len(valid) >= 2:
-            st.subheader("🔥 Correlation Heatmap")
-            corr = df_cleaned[valid].corr()
-            fig, ax = plt.subplots()
-            sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
-            st.pyplot(fig)
-
-            # Summarize strongest correlations
-            corr_pairs = (
-                corr.where(~np.tril(np.ones(corr.shape)).astype(bool))
-                .stack()
-                .sort_values(ascending=False)
-            )
-            top_corr = corr_pairs.head(5)
-            prompt = ("You are a data analyst. Provide a concise narrative (max 3 sentences) highlighting the strongest correlations " 
-                      "observed in the heatmap. Here are the top correlation pairs:\n" 
-                      f"{top_corr.to_string()}")
-            summary = generate_summary(prompt)
-            st.markdown(f"> **AI Summary:** {summary}")
-
-    # 8️⃣ DOWNLOAD CLEANED CSV -------------------------------------------------
+    #  DOWNLOAD CLEANED CSV -------------------------------------------------
     st.subheader("📤 Download Cleaned CSV")
     csv_data = df_cleaned.to_csv(index=False).encode("utf‑8")
     st.download_button(
